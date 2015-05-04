@@ -10,8 +10,9 @@ namespace HyperSpace
     {
         static void Main(string[] args)
         {
-            Hyperspace game = new HyperSpace();
-            game.PlayGame();
+            Hyperspace game1 = new Hyperspace();
+            game1.PlayGame();
+  
            
         }
     }
@@ -23,28 +24,28 @@ namespace HyperSpace
         public string Symbol { get; set; }
         public bool IsSpaceRift { get; set; }
 
-        static List<string> ObstacleList = new List<string>() { "*", ".", ":", ";", "'", "!" };
+        static List<string> ObstacleList = new List<string>() { "*", ".", ":", ";", "'", "!", "?" };
         static Random rng = new Random();
 
         public Unit(int x, int y)
         {
             this.X = x;
             this.Y = y;
-            this.Symbol = ObstacleList[rng.Next(0, ObstacleList.Count()-1)];
+            this.Symbol = ObstacleList[rng.Next(ObstacleList.Count())];
             this.Color = ConsoleColor.Cyan;
         }
         public Unit(int x, int y, ConsoleColor color, string symbol, bool isSpaceRift)
         {
             this.X = x;
             this.Y = y;
-            this.Color = ConsoleColor.Green;
+            this.Color = color;
             this.Symbol = symbol;
             this.IsSpaceRift = isSpaceRift;
         }
         public void Draw()
         {
             Console.SetCursorPosition(X, Y);
-            Console.ForegroundColor = this.Color;
+            Console.ForegroundColor = Color;
             Console.WriteLine(Symbol);
         }
         
@@ -59,28 +60,31 @@ namespace HyperSpace
         
         private Random rng = new Random();
 
-        public Hyperspace(int score, int speed, List<Unit> obstacleList)
+        public Hyperspace()
         {
-            this.Score = score;
-            this.Speed = speed;
-            this.ObstacleList = obstacleList;
-            this.SpaceShip = new Unit((Console.WindowWidth / 2) - 1, Console.WindowHeight - 1, ConsoleColor.Red, "@", false);
-            Console.BufferHeight = 30; Console.WindowHeight = 30;
-            Console.BufferWidth = 60; Console.WindowWidth = 60;
+            Console.BufferHeight = 40;
+            Console.WindowHeight = 40;
+            //Console.BufferWidth = 50; 
+            Console.WindowWidth = 50;
+            this.Score = 0;
+            this.Speed = 0;
+            this.ObstacleList = new List<Unit>();
+            this.Smashed = false;
+            this.SpaceShip = new Unit((Console.WindowWidth / 2) - 1, Console.WindowHeight- 1, ConsoleColor.Red, "@", false);
         }
 
         public void PlayGame()
         {
-            while (!Smashed)
+            while (Smashed == false)
             {
                 int riftChance = rng.Next(0, 11);
-                if (riftChance < 9)
+                if (riftChance > 9)
                 {
-                    ObstacleList.Add(new Unit(rng.Next(0, Console.WindowWidth - 2), 5, ConsoleColor.Green, "%", true));
+                    ObstacleList.Add(new Unit(rng.Next(0, Console.WindowWidth - 2), 2, ConsoleColor.Green, "%", true));
                 }
                 else
                 {
-                    ObstacleList.Add(new Unit(rng.Next(0, Console.WindowWidth - 2), 5));
+                    ObstacleList.Add(new Unit(rng.Next(Console.WindowWidth- 2), 2));
                 }
                 MoveShip();
                 MoveObstacles();
@@ -99,6 +103,7 @@ namespace HyperSpace
             if (Console.KeyAvailable)
             {
                 ConsoleKeyInfo keyPressed = Console.ReadKey();
+                
                 while (Console.KeyAvailable)
                 {
                     Console.ReadKey(true);
@@ -111,6 +116,10 @@ namespace HyperSpace
                 {
                     SpaceShip.X++;
                 }
+                else
+                {
+                    Console.WriteLine("Invalid option");
+                }
             }
         }
 
@@ -121,7 +130,8 @@ namespace HyperSpace
             foreach (Unit unit in ObstacleList)
             {
                 unit.Y++;
-                if (unit.IsSpaceRift && unit.X == SpaceShip.X && unit.Y == SpaceShip.Y )
+                
+                if (unit.IsSpaceRift == false  && unit.X == SpaceShip.X && unit.Y == SpaceShip.Y )
                 {
                     Speed -= 50;
                 }
