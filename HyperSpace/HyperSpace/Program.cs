@@ -24,6 +24,7 @@ namespace HyperSpace
         public string Symbol { get; set; }
         public bool IsSpaceRift { get; set; }
 
+        //list that holds the obstacles you need to avoid
         static List<string> ObstacleList = new List<string>() { "*", ".", ":", ";", "'", "!", "?" };
         static Random rng = new Random();
 
@@ -94,10 +95,18 @@ namespace HyperSpace
                 {
                     Speed++;
                 }
+                else
+                {
+                    //if speed gets up to 170 stay at that speed
+                    Speed = 170;
+                }
                 System.Threading.Thread.Sleep(170 - Speed);
             }
         }
 
+        /// <summary>
+        /// will determine if the ship moves to the left or the right
+        /// </summary>
         public void MoveShip()
         {
             if (Console.KeyAvailable)
@@ -108,16 +117,19 @@ namespace HyperSpace
                 {
                     Console.ReadKey(true);
                 }
+                // move left is left arrow is pressed
                 if (keyPressed.Key == ConsoleKey.LeftArrow && SpaceShip.X > 0)
                 {
                     SpaceShip.X--;
                 }
+                    //move to the right if the right arrow key is pressed
                 else if (keyPressed.Key == ConsoleKey.RightArrow && SpaceShip.X < (Console.WindowWidth - 2))
                 {
                     SpaceShip.X++;
                 }
                 else
                 {
+                    //will display if incorrect option entered
                     Console.WriteLine("Invalid option");
                 }
             }
@@ -143,10 +155,12 @@ namespace HyperSpace
                 {
                     newObstacleList.Add(unit);
                 }
-                else
+                    //keep rising in speed until reaches 170
+                else if (Speed > 170)
                 {
                     Score++;
                 }
+
             }
             ObstacleList = newObstacleList;
 
